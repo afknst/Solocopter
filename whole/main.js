@@ -7,21 +7,23 @@ function main () {
   init1()
   // init2()
 
-  window.addEventListener('mousedown', onMouseDown)
+  document.addEventListener('mousedown', onMouseDown)
 
-  window.addEventListener('mouseup', onMouseUp)
+  document.addEventListener('mouseup', onMouseUp)
 
-  window.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mousemove', onMouseMove)
 
   window.addEventListener('resize', onResize)
 }
 
 function init1 () {
+  sceneThreeJs.sceneGraph = new THREE.Scene()
+  sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
   sceneThreeJs.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 1)
   sceneThreeJs.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
   sceneThreeJs.renderer.setPixelRatio(window.devicePixelRatio)
   sceneThreeJs.renderer.setClearColor(0xeeeeee, 1.0)
-  sceneThreeJs.renderer.setSize(screenSize.m)
+  sceneThreeJs.renderer.setSize(screenSize.m, screenSize.m)
   sceneInit.insertRenderInHtml(sceneThreeJs.renderer.domElement)
   sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
   sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(0, 0, 10))
@@ -31,10 +33,15 @@ function init1 () {
 }
 
 function init2 () {
-  sceneThreeJs.renderer = sceneInit.createRenderer()
-  sceneInit.insertRenderInHtml(sceneThreeJs.renderer.domElement)
-  sceneThreeJs.camera = sceneInit.createCamera(0, 1, 8)
+  // sceneThreeJs.sceneGraph = new THREE.Scene()
+  // sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
+  // sceneThreeJs.renderer = sceneInit.createRenderer()
+  // sceneInit.insertRenderInHtml(sceneThreeJs.renderer.domElement)
+
+  sceneThreeJs.camera = sceneInit.createCamera(0, 0, 3)
   sceneThreeJs.controls = new THREE.OrbitControls(sceneThreeJs.camera)
+  // sceneThreeJs.controls.enabled = true;
+  sceneThreeJs.renderer.setSize(screenSize.w, screenSize.h)
   // sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(-3, 5, 1))
   // sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(3, -5, -1))
   // const elementsToAdd = [];
@@ -112,7 +119,8 @@ function init2 () {
   sceneGraph.add(sphereTranslation)
   pickingData.visualRepresentation.sphereTranslation = sphereTranslation
 
-  render()
+  animate()
+  // render()
 }
 
 function onMouseDown (event) {
@@ -169,39 +177,48 @@ function onMouseUp (event) {
     update2(x, y)
   }
 
-  if (globalVar.s2) {
+  else if (globalVar.s2) {
     const k = y / x
     globalVar.x2 = globalVar.r * x / Math.abs(x) / Math.sqrt(k * k + 1)
     globalVar.y2 = k * globalVar.x1
     globalVar.theta2 = angle(globalVar.x2, globalVar.y2)
     globalVar.dtheta = 2 * Math.PI / globalVar.n
     globalVar.s2 = false
+    globalVar.s3 = true
     console.log('Finished!')
     console.log('r=' + globalVar.r, 'theta=' + globalVar.dtheta, 'n=' + globalVar.n)
     remove('line2')
+    pickingData.enableDragAndDrop = false
+    init2()
     render()
   }
 
-  if (globalVar.s3) {
-    pickingData.enableDragAndDrop = false
-  }
+  // else if (globalVar.s3) {
+  //   globalVar.s3 = false
+  //   pickingData.enableDragAndDrop = false
+  //   init2()
+  // }
 }
 
 function onMouseMove (event) {
   console.log('Mouse move')
-  console.log(mousePosition(event, 0))
-  const x = mousePosition(event, 0).x
-  const y = mousePosition(event, 0).y
+  // console.log(mousePosition(event, 0))
+  // const x = mousePosition(event, 0).x
+  // const y = mousePosition(event, 0).y
   var i
 
   if (globalVar.s1) {
+    const x = mousePosition(event, 0).x
+    const y = mousePosition(event, 0).y
     remove('circle')
     remove('line1')
     update1(x, y)
     render()
   }
 
-  if (globalVar.s2) {
+  else if (globalVar.s2) {
+    const x = mousePosition(event, 0).x
+    const y = mousePosition(event, 0).y
     for (i = 2; i <= globalVar.n + 1; i++) {
       var name = 'line' + i
       remove(name)
@@ -210,7 +227,9 @@ function onMouseMove (event) {
     render()
   }
 
-  if (globalVar.s3 && pickingData.enableDragAndDrop === true) {
+  else if (globalVar.s3 && pickingData.enableDragAndDrop === true) {
+    const x = mousePosition(event).x
+    const y = mousePosition(event).y
     // Projection inverse passant du point 2D sur l'écran à un point 3D
     const selectedPoint = Vector3(x, y, 0.5 /* valeur de z après projection */)
     selectedPoint.unproject(sceneThreeJs.camera)
@@ -320,6 +339,15 @@ function onResize () {
   // sceneThreeJs.camera.updateProjectionMatrix()
   //
   // sceneThreeJs.renderer.setSize(width, height)
-  sceneThreeJs.renderer.setSize(screenSize.m)
+  if(globalVar.s3==true)
+    sceneThreeJs.renderer.setSize(screenSize.w, screenSize.h)
+  else
+    sceneThreeJs.renderer.setSize(screenSize.m, screenSize.m)
   render()
+}
+
+function animate() {
+  requestAnimationFrame( animate );
+  sceneThreeJs.controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+  render();
 }

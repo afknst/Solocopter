@@ -91,8 +91,8 @@ const sceneInit = (function () {
   }
 })()
 
-sceneThreeJs.sceneGraph = new THREE.Scene()
-sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
+// sceneThreeJs.sceneGraph = new THREE.Scene()
+// sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
 // sceneThreeJs.renderer = sceneInit.createRenderer()
 // sceneInit.insertRenderInHtml(sceneThreeJs.renderer.domElement)
 // sceneThreeJs.camera = sceneInit.createCamera(0, 1, 8)
