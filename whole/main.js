@@ -193,6 +193,11 @@ function onMouseUp (event) {
     render()
   }
 
+  if (pickingData.enableDragAndDrop = true){
+    sceneThreeJs.controls.enabled = true
+    pickingData.enableDragAndDrop = false
+  }
+
   // else if (globalVar.s3) {
   //   globalVar.s3 = false
   //   pickingData.enableDragAndDrop = false
@@ -228,6 +233,7 @@ function onMouseMove (event) {
   }
 
   else if (globalVar.s3 && pickingData.enableDragAndDrop === true) {
+    sceneThreeJs.controls.enabled = false
     const x = mousePosition(event).x
     const y = mousePosition(event).y
     // Projection inverse passant du point 2D sur l'écran à un point 3D
