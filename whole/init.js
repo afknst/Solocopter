@@ -1,29 +1,23 @@
-/* global THREE */
+/* global THREE screenSize */
+/* eslint-disable no-unused-vars  */
 
 const sceneThreeJs = {
   sceneGraph: null,
   camera: null,
   renderer: null,
-  controls: null
+  controls: null,
+  transformControl: null,
+  dragcontrols: null
 }
 
-const pickingData = {
-  enabled: false, // Mode picking en cours ou désactivé (CTRL enfoncé)
-  enableDragAndDrop: false, // Drag and drop en cours ou désactivé
-  selectableObjects: [], // Les objets selectionnables par picking
-  selectedObject: null, // L'objet actuellement selectionné
-  selectedPlane: { p: null, n: null }, // Le plan de la caméra au moment de la selection. Plan donné par une position p, et une normale n.
-  // Les représentations visuelles associées au picking
-  visualRepresentation: {
-    sphereSelection: null, // Une sphère montrant le point d'intersection au moment du picking
-    sphereTranslation: null // Une sphère montrant l'état actuel de la translation
-  }
-}
-
-const raycaster = new THREE.Raycaster()
-
-function render () {
-  sceneThreeJs.renderer.render(sceneThreeJs.sceneGraph, sceneThreeJs.camera)
+const objects = {
+  sphere0: null,
+  point: new THREE.Vector3(),
+  geometry: new THREE.SphereGeometry(0.01, 32, 32),
+  curve: null,
+  handle: null,
+  surface0: [],
+  surface1: []
 }
 
 const globalVar = {
@@ -41,23 +35,39 @@ const globalVar = {
   dtheta: 0
 }
 
+const ARC_SEGMENTS = 200
+var positions = []
+var splineHelperObjects = []
+var helperObjects = []
+var splinePointsLength = 4
+var hiding
+
+const color = {
+  bg: 0xeeeeee,
+  surface: 0x00ffff,
+  frame: 0xff0000,
+  ind: 0xaaaaaa
+}
+
+const raycaster = new THREE.Raycaster()
+
+function render () {
+  sceneThreeJs.renderer.render(sceneThreeJs.sceneGraph, sceneThreeJs.camera)
+}
+
 const sceneInit = (function () {
   return {
 
     // Création et ajout de lumière dans le graphe de scène
     insertLight: function (sceneGraph, p) {
-      const spotLight = new THREE.SpotLight(0xffffff, 0.8)
+      const spotLight = new THREE.SpotLight(0xffffff, 1, 100)
       spotLight.position.copy(p)
-
       spotLight.castShadow = true
-      spotLight.shadow.mapSize.width = 2048
-      spotLight.shadow.mapSize.height = 2048
-
       sceneGraph.add(spotLight)
     },
 
     insertAmbientLight: function (sceneGraph) {
-      const ambient = new THREE.AmbientLight(0xffffff, 0.8)
+      const ambient = new THREE.AmbientLight(0xf0f0f0)
       sceneGraph.add(ambient)
     },
 
@@ -72,10 +82,10 @@ const sceneInit = (function () {
 
     // Initialisation du moteur de rendu
     createRenderer: function () {
-      const renderer = new THREE.WebGLRenderer({ antialias: true })
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
       renderer.setPixelRatio(window.devicePixelRatio)
-      renderer.setClearColor(0xeeeeee, 1.0)
-      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setClearColor(color.bg, 1.0)
+      renderer.setSize(screenSize.m, screenSize.m)
 
       renderer.shadowMap.enabled = true
       renderer.shadowMap.Type = THREE.PCFSoftShadowMap
@@ -90,6 +100,16 @@ const sceneInit = (function () {
 
   }
 })()
+
+function clearScene () {
+  for (var i = sceneThreeJs.sceneGraph.children.length - 1; i >= 0; i--) {
+    sceneThreeJs.sceneGraph.remove(sceneThreeJs.sceneGraph.children[i])
+  }
+}
+
+sceneThreeJs.sceneGraph = new THREE.Scene()
+sceneThreeJs.sceneGraph.background = new THREE.Color(0xf0f0f0)
+sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
 
 // sceneThreeJs.sceneGraph = new THREE.Scene()
 // sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)

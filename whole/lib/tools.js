@@ -1,4 +1,27 @@
 /* global THREE */
+/* eslint-disable no-unused-vars */
+
+const screenSize = {
+  w: window.innerWidth,
+  h: window.innerHeight,
+  m: Math.min(window.innerWidth, window.innerHeight)
+}
+
+const mousePosition = function (event, type) {
+  var w
+  var h
+  if (type === undefined) {
+    w = screenSize.w
+    h = screenSize.h
+  } else {
+    w = screenSize.m
+    h = screenSize.m
+  }
+  return {
+    x: 2 * event.clientX / w - 1,
+    y: -2 * event.clientY / h + 1
+  }
+}
 
 function angle (x, y) {
   const theta = Math.atan(Math.abs(y / x))
