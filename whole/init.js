@@ -113,18 +113,25 @@ function clearScene () {
 
 const exportSpline = { export: function(){
 
-  var strplace = [];
+  var exporter = new THREE.STLExporter();
+  const code = exporter.parse(sceneThreeJs.sceneGraph)
+  const blob = new Blob([code], {type: "text/plain;charset=utf-8"});
+  saveAs(blob, "Solocopter.stl");
+  // console.log(code)
+  // prompt( 'copy and paste code', code );
 
-  for ( var i = 0; i < splinePointsLength; i ++ ) {
-
-    var p = splineHelperObjects[ i ].position;
-    strplace.push( 'new THREE.Vector3({0}, {1}, {2})'.format( p.x, p.y, p.z ) );
-
-  }
-
-  console.log( strplace.join( ',\n' ) );
-  var code = '[' + ( strplace.join( ',\n\t' ) ) + ']';
-  prompt( 'copy and paste code', code );
+  // var strplace = [];
+  //
+  // for ( var i = 0; i < splinePointsLength; i ++ ) {
+  //
+  //   var p = splineHelperObjects[ i ].position;
+  //   strplace.push( 'new THREE.Vector3({0}, {1}, {2})'.format( p.x, p.y, p.z ) );
+  //
+  // }
+  //
+  // console.log( strplace.join( ',\n' ) );
+  // var code = '[' + ( strplace.join( ',\n\t' ) ) + ']';
+  // prompt( 'copy and paste code', code );
 
 }}
 
