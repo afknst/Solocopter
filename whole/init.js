@@ -7,13 +7,14 @@ const sceneThreeJs = {
   renderer: null,
   controls: null,
   transformControl: null,
-  dragcontrols: null
+  dragcontrols: null,
+  gui: null
 }
 
 const objects = {
   sphere0: null,
   point: new THREE.Vector3(),
-  geometry: new THREE.SphereGeometry(0.01, 32, 32),
+  geometry: new THREE.SphereGeometry(0.02, 32, 32),
   curve: null,
   handle: null,
   surface0: [],
@@ -24,6 +25,7 @@ const globalVar = {
   s1: true,
   s2: false,
   s3: false,
+  play: false,
   x1: 0,
   y1: 0,
   x2: 0,
@@ -32,7 +34,8 @@ const globalVar = {
   r: 0,
   theta1: 0,
   theta2: 0,
-  dtheta: 0
+  dtheta: 0,
+  time: 0
 }
 
 const ARC_SEGMENTS = 200
@@ -45,8 +48,8 @@ var hiding
 const color = {
   bg: 0xeeeeee,
   surface: 0x00ffff,
-  frame: 0xff0000,
-  ind: 0xaaaaaa
+  frame: 0x00aaaa,
+  ind: 0xffffff
 }
 
 const raycaster = new THREE.Raycaster()
@@ -59,10 +62,11 @@ const sceneInit = (function () {
   return {
 
     // Création et ajout de lumière dans le graphe de scène
-    insertLight: function (sceneGraph, p) {
+    insertLight: function (sceneGraph, p, shadow = false) {
       const spotLight = new THREE.SpotLight(0xffffff, 1, 100)
       spotLight.position.copy(p)
-      spotLight.castShadow = true
+      if (shadow)
+        spotLight.castShadow = true
       sceneGraph.add(spotLight)
     },
 

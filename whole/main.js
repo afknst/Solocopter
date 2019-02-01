@@ -30,10 +30,16 @@ function init2 () {
   sceneThreeJs.camera = sceneInit.createCamera(0, 0, 3)
   sceneThreeJs.controls = new THREE.OrbitControls(sceneThreeJs.camera, sceneThreeJs.renderer.domElement)
   sceneThreeJs.renderer.setSize(screenSize.w, screenSize.h)
-  sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(0, 0, 5))
+  sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(0, 0, 10), true)
+  sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(0, 0, 100))
+  sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(20, -20, 100))
+  sceneInit.insertLight(sceneThreeJs.sceneGraph, Vector3(-20, 20, 100))
+
+  sceneThreeJs.gui = new dat.GUI()
+  sceneThreeJs.gui.add( globalVar, 'play' )
+  sceneThreeJs.gui.open()
 
   var planeGeometry = new THREE.PlaneBufferGeometry(200, 200)
-  // planeGeometry.rotateX( - Math.PI / 2 );
   var planeMaterial = new THREE.ShadowMaterial({ opacity: 0.3 })
 
   var plane = new THREE.Mesh(planeGeometry, planeMaterial)
@@ -144,6 +150,20 @@ function onResize () {
 function animate () {
   requestAnimationFrame(animate)
   render()
+
+  if (globalVar.play)
+  {
+    globalVar.time += 0.02
+
+    splineHelperObjects[3].position.z = splineHelperObjects[2].position.z + globalVar.r * Math.sin(10 * globalVar.time) / 2
+
+    updateSplineOutline()
+
+    objects.sphere0.position.x = 5 * Math.sin(globalVar.time)
+    objects.sphere0.position.y = 2 * (-Math.cos(globalVar.time) + 1)
+
+    objects.sphere0.position.z = - globalVar.r * (Math.cos(globalVar.time * 5) - 1)
+  }
 }
 
 function delayHideTransform () {
