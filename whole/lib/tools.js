@@ -48,3 +48,16 @@ function MaterialRGB (r, g, b) {
   const c = new THREE.Color(r, g, b)
   return new THREE.MeshLambertMaterial({ color: c })
 }
+
+String.prototype.format = function () {
+
+  var str = this;
+
+  for ( var i = 0; i < arguments.length; i ++ ) {
+
+    str = str.replace( '{' + i + '}', arguments[ i ] );
+
+  }
+  return str;
+
+};

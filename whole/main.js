@@ -37,6 +37,7 @@ function init2 () {
 
   sceneThreeJs.gui = new dat.GUI()
   sceneThreeJs.gui.add( globalVar, 'play' )
+  sceneThreeJs.gui.add( exportSpline, 'export' )
   sceneThreeJs.gui.open()
 
   var planeGeometry = new THREE.PlaneBufferGeometry(200, 200)

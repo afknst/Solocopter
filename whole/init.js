@@ -111,6 +111,23 @@ function clearScene () {
   }
 }
 
+const exportSpline = { export: function(){
+
+  var strplace = [];
+
+  for ( var i = 0; i < splinePointsLength; i ++ ) {
+
+    var p = splineHelperObjects[ i ].position;
+    strplace.push( 'new THREE.Vector3({0}, {1}, {2})'.format( p.x, p.y, p.z ) );
+
+  }
+
+  console.log( strplace.join( ',\n' ) );
+  var code = '[' + ( strplace.join( ',\n\t' ) ) + ']';
+  prompt( 'copy and paste code', code );
+
+}}
+
 sceneThreeJs.sceneGraph = new THREE.Scene()
 sceneThreeJs.sceneGraph.background = new THREE.Color(0xf0f0f0)
 sceneInit.insertAmbientLight(sceneThreeJs.sceneGraph)
